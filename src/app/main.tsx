@@ -32,11 +32,7 @@ const Main = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const aboutMore = (n: number) => {
-    const total = 10 + 1;
-    n = total;
-    return console.log(n);
-  };
+
 
   return (
     <>

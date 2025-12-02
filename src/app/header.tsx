@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {MdComment, MdContactPage, MdGroup, MdAdminPanelSettings, MdClose, MdNoFood} from 'react-icons/md';
+import {MdComment, MdContactPage, MdGroup, MdAdminPanelSettings, MdClose} from 'react-icons/md';
+import { FaInstagram } from "react-icons/fa";
 
 //caminho logo img "/img/Logo.png"
 
@@ -18,29 +19,56 @@ const Header = () => {
         <p className="text-xl font-bold text-white"><strong>Rua Comandante Rubens Silva, 253</strong></p>
         <p className="font-bold text-gray-300">Freguesia, Rio de Janeiro, RJ</p>
       </div>
-      <div className="hidden md:flex md:gap-3 md:items-center">
-        <Link className="text-white text-xl" href={'/about'}>Mestre</Link>
-        <Link className="text-white text-xl" href={'/grounp'}>Turmas</Link>
-        <Link className="text-white text-xl" href={'/contact'}>Contatos</Link>
-        <Link className="text-white text-xl" href={'/login'}>AMD</Link>
+      <div className="hidden md:flex md:gap-10 md:items-center">
+        <Link className="text-white text-xl hover:bg-green-500 px-2 rounded-2xl duration-700" href={'/about'}>Mestre</Link>
+        <Link className="text-white text-xl hover:bg-green-500 px-2 rounded-2xl duration-700" href={'/grounp'}>Turmas</Link>
+        <Link className="text-white text-xl hover:bg-blue-500 px-2 rounded-2xl duration-700" href={'/login'}>ADM</Link>
+        <a href="https://api.whatsapp.com/send/?phone=5521964933158&text=Ol%C3%A1%21+Gostaria+de+saber+mais+informa%C3%A7%C3%B5es+sobre+aulas+de+capoeira.&type=phone_number&app_absent=0" className="">
+        <FaInstagram size={55} color="white" style={{
+              background: 'linear-gradient(120deg, orange, pink, blue )',
+              borderRadius: '10px',
+              width: '37px',
+              height:'40px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 17px  '
+            }}
+          />
+        </a>
         
       </div>
       <div className="absolute flex flex-col items-center gap-3 mr-7  right-0 top-1 w-full">
-        <div className="flex ml-100 items-center duration-500 mt-7 md:hidden  ">
-          <MdNoFood size={25} color="white"
+        <div className="flex ml-85 flex-col gap-2 items-center duration-500 mt-7 md:hidden"
           onClick={()=>setIsMenuOpen(!isMenuOpen)}
-          />
+        > {/*Menu Hamburg 3 linhas*/}
+          <div className={isMenuOpen ? "hidden": "flex flex-col gap-2"}>
+            <div className="p-0.5 w-10 rounded-xl bg-white" ></div>
+            <div className="p-0.5 w-10 rounded-xl bg-white" ></div>
+            <div className="p-0.5 w-10 rounded-xl bg-white" ></div>
+          </div>
+            
+          {/* criando o x (Fechar)*/}
+          <div className={isMenuOpen ? "flex" : "hidden"}>
+            <MdClose size={55} color="white"
+            className="-mt-2"
+            />
+          </div>
         </div>
 
-        <div className={isMenuOpen ? "flex gap-3 justify-center items-center md:hidden  ml-14 duration-500 bg-black mt-4.5 opacity-85 w-full" : "hidden "}
+        
+
+        <div className={isMenuOpen ? "flex gap-3 justify-center items-center md:hidden  ml-14 -mt-1 duration-500 bg-black mb-5 p-5 opacity-85 w-full" : "hidden "}
           style={{
             transform: 'transition: all 2.5s ease'
           }}
         >
-          <Link className="text-white p-7" href={'/about'}>Mestre</Link>
-          <Link className="text-white p-7" href={'/grounp'}>Turmas</Link>
-          <Link className="text-white p-7" href={'/contact'}>Contatos</Link>
-          <Link className="text-white p-7" href={'/login'}>AMD</Link>
+          <Link className="text-white text-xl p-3 hover:bg-green-500 duration-500 rounded-4xl" href={'/about'}>Mestre</Link>
+          <Link className="text-white text-xl p-3 hover:bg-green-500 duration-500 rounded-4xl" href={'/grounp'}>Turmas</Link>
+          <Link className="text-white text-xl p-3 hover:bg-blue-500 duration-500 rounded-4xl" href={'/login'}>ADM</Link>
+          <a href="https://api.whatsapp.com/send/?phone=5521964933158&text=Ol%C3%A1%21+Gostaria+de+saber+mais+informa%C3%A7%C3%B5es+sobre+aulas+de+capoeira.&type=phone_number&app_absent=0" 
+            className="cursor-pointer"
+          >
+            <FaInstagram size={55} color="white"/>
+          </a>
         </div>
       </div>
     </div>

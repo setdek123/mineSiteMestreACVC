@@ -21,6 +21,20 @@ const openDB = async () => {
   });
 };
 
+// outro jeito de abrir conexao com o banco db
+
+const dbJeito = new sqlite3.Database("Visitas.db");
+
+// criando Tabela Visita
+
+dbJeito.run(`
+  CREATE TABLE IF NOT EXISTS visitas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data_hora TEXT NOT NULL
+  )
+  `);
+
+//-------------------------------------------
 
 (async () => {
   const db = await openDB();
@@ -44,7 +58,8 @@ const openDB = async () => {
     );
   `);
 
-  console.log("Tabelas 'users' e 'commits' criadas/verificadas com sucesso!");
+
+  console.log("Tabelas 'users', 'commits' e 'visitas' criadas/verificadas com sucesso!");
 })();
 
 
@@ -144,7 +159,47 @@ app.delete('/commits/:id', async(req, res)=>{
   res.status(200).json({msg: 'Usuário deletado com sucesso!'})
 });
 
+// ------------------------------------------ post / get Views site
+
+app.post('/visita', (req, res)=>{
+  //const db = await openDB();
+  
+  try{
+    const agora = new Date().toISOString();
+
+    dbJeito.run('INSERT INTO visitas (data_hora) VALUES (?)', [agora], 
+      (err)=>{
+        if(err) return res.status(500).json({msg: err.message});
+      });
+    res.status(200).json({msg: 'Visita registrada',data: agora});
+  
+  }catch(err){
+    res.status(500).json({msg: 'Error no servidor', err});
+  }
+});
+
+// consultar visitar por dias, mes, e ano
+app.get('/visitas', (req, res)=>{
+  //const db = await openDB();
+  
+  dbJeito.all(`
+      SELECT
+        COUNT(*) AS total,
+        strftime('%Y', data_hora) AS ano,
+        strftime('%m', data_hora) AS mes,
+        strftime('%d', data_hora) AS dia,
+        strftime('%H', data_hora) AS hora 
+      FROM visitas
+      GROUP BY ano, mes, dia, hora
+      ORDER BY data_hora DESC
+    `, 
+    [],(err, rows)=>{
+      if(err) return res.status(500).json({msg: 'Error ao pegar staticticas dos meses e anos!'});
+      res.status(200).json(rows || []);
+    });
+});
+
 
 app.listen(3000, () => {
-  console.log('🔥 Servidor rodando em http://localhost:3000');
+  console.log('Servidor rodando em http://localhost:3000');
 });

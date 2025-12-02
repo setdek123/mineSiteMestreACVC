@@ -73,7 +73,7 @@ const Footer = () => {
 
   return (
     <div className="flex min-h-screen flex-col p-10 items-center bg-[#081020] ">
-      <h1 className="text-7xl mt-30 font-extrabold text-green-500 text-center mb-10">
+      <h1 className=" text-3xl md:text-7xl md:mt-30 font-extrabold text-green-500 text-center md:mb-10">
         Deixe sua opinião sobre nosso site!
       </h1>
 
@@ -83,20 +83,20 @@ const Footer = () => {
 
         <input
           type="text"
-          className="bg-amber-50 p-4 rounded-md w-2xl"
+          className="bg-amber-50 md:p-4 p-2 px-5 w-80 rounded-md md:w-2xl"
           value={msgVisitor}
           onChange={(e) => setMsgVisitor(e.target.value)}
           placeholder="Insira seu comentário..."
         />
 
-        <Button text="Comentar" size="p-3 w-40" onclickt={CommitUsers} />
+        <Button text="Comentar" size="p-3 md:w-40 hidden md:flex ml-10" onclickt={CommitUsers} />
       </form>
 
       {/* ERRO */}
       {errorMsg && <p className="text-red-400 text-2xl mb-10">{errorMsg}</p>}
 
       {/* LISTA DE COMENTÁRIOS */}
-      <ul className="flex flex-col gap-6 mr-200 mt-10 w-full max-w-3xl">
+      <ul className="flex flex-col gap-6 md:mr-200 md:mt-10 w-full max-w-3xl">
         {ItemsUsers.map((item: any) => (
           <li
             key={item.id}
@@ -110,12 +110,12 @@ const Footer = () => {
           </li>
         ))}
       </ul>
-      <div>
+      <div className="z-99">
         <a href="https://api.whatsapp.com/send/?phone=5521964933158&text=Ol%C3%A1%21+Gostaria+de+saber+mais+informa%C3%A7%C3%B5es+sobre+aulas+de+capoeira.&type=phone_number&app_absent=0">
           <FaWhatsapp
             color="green"
             size={90}
-            className="fixed bottom-10 right-10  p-3 hover:size-30 cursor-pointer duration-500"
+            className="fixed bottom-0 right-0  p-3 hover:size-30 cursor-pointer duration-500"
             
           />
         </a>
