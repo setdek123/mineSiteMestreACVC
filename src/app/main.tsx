@@ -46,7 +46,7 @@ const Main = () => {
 
        
 
-        <div className="relative flex flex-col mt-15 items-start gap-6 px-6 sm:px-10 md:px-20 ml-20 lg:px-40 py-35 md:py-32 text-left">
+        <div className="relative flex flex-col mt-15 items-start gap-6 px-6 sm:px-10 md:px-20 lg:px-40 py-35 md:py-32 text-left">
           <h1 className="text-white text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold max-w-[90%] md:max-w-[70%] leading-tight drop-shadow-lg">
             Venha fazer uma aula experimental!
           </h1>
@@ -55,7 +55,7 @@ const Main = () => {
             Capoeira muda o mundo!
           </h2>
 
-          <div className="z-10 mt-6 sm:mt-10 ml-18 mt-20">
+          <div className="z-10 sm:mt-10 ml-18 mt-20">
             <Button text="Saiba mais" size="p-3 px-6 sm:px-10" onclickt={()=>router.push('/aboutmore')}/>
           </div>
         </div>

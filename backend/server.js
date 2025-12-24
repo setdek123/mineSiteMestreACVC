@@ -1,8 +1,12 @@
 import express from 'express';
 import cors from 'cors';
+import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
@@ -21,11 +25,11 @@ const openDB = async () => {
   });
 };
 
-// outro jeito de abrir conexao com o banco db
+// opend conection with db
 
 const dbJeito = new sqlite3.Database("Visitas.db");
 
-// criando Tabela Visita
+// Creating table visitas
 
 dbJeito.run(`
   CREATE TABLE IF NOT EXISTS visitas (
@@ -39,7 +43,7 @@ dbJeito.run(`
 (async () => {
   const db = await openDB();
 
-  // Tabela de usuários
+  // Table users
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +54,7 @@ dbJeito.run(`
     );
   `);
 
-  // Tabela de commits
+  // Table commits
   await db.exec(`
     CREATE TABLE IF NOT EXISTS commits (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,9 +67,40 @@ dbJeito.run(`
 })();
 
 
+// VerifyTokenIsValid
+const Autetication_Token = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-// 🔹 Listar todos os usuários
-app.get('/listUsers', async (req, res) => {
+  
+  if (!authHeader) {
+    return res.status(403).json({ msg: 'Token não fornecido!' });
+  }
+
+  // Bearer TOKEN
+  const [, token] = authHeader.split(' ');
+
+  
+  if (!token) {
+    return res.status(403).json({ msg: 'Token mal formatado!' });
+  }
+
+  jwt.verify(token, process.env.SECRET_TOKEN, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ msg: 'Token inválido!' });
+    }
+
+    
+    req.userId = decoded.id;
+
+    next();
+  });
+};
+
+
+
+
+// Get all Users
+app.get('/listUsers', Autetication_Token  ,async (req, res) => {
   try {
     const db = await openDB();
     const users = await db.all('SELECT * FROM users');
@@ -76,34 +111,89 @@ app.get('/listUsers', async (req, res) => {
   }
 });
 
-// 🔹 Login
+
+app.post('/register', async (req, res)=> {
+  const {name, email, passw} = req.body;
+
+  const db = await openDB();
+
+  if(!name || !email || !passw) return res.status(400).json({msg: 'Todos os campos são obrogatórios!'});
+
+  try{
+    const hashPassw = await bcrypt.hash(passw, 10);
+
+    db.run('INSERT INTO users (name, email, passw) VALUES (?, ?, ?)', [name, email, hashPassw]);
+    res.status(201).json({msg: 'Usuário criado com sucesso!'});
+
+  }catch(err){
+    res.status(500).json({msg: 'Error ao criar usuario!', err});
+  }
+
+
+});
+
+
+
+
 app.post('/login', async (req, res) => {
   try {
-    const { email, passw } = req.body;
+    const { email, passw } = req.body || {};
 
     if (!email || !passw) {
       return res.status(400).json({ msg: 'Preencha todos os campos!' });
     }
 
     const db = await openDB();
+
+    // find email in sql just
     const user = await db.get(
-      'SELECT * FROM users WHERE email = ? AND passw = ?',
-      [email, passw]
+      'SELECT * FROM users WHERE email = ?',
+      [email]
     );
 
     if (!user) {
       return res.status(401).json({ msg: 'Usuário ou senha incorretos!' });
     }
 
-    res.status(200).json({ msg: 'Login efetuado com sucesso!', user });
+    // verify get items
+    console.log('EMAIL RECEBIDO:', email);
+    console.log('USER DO BANCO:', user);
+
+
+    // compare passw with hash
+    const isValidPassword = await bcrypt.compare(passw, user.passw);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ msg: 'Usuário ou senha incorretos!' });
+    }
+
+    // verify get items
+    console.log('SENHA DIGITADA:', passw);
+    console.log('HASH NO BANCO:', user.passw);
+
+    const token = jwt.sign(
+      { id: user.id },
+      process.env.SECRET_TOKEN,
+      { expiresIn: '1d' }
+    );
+
+    delete user.passw;
+
+    res.status(200).json({
+      msg: 'Login efetuado com sucesso!',
+      token,
+      user,
+    });
+
   } catch (err) {
-    console.error(err);
+    console.error('ERRO LOGIN 👉', err);
     res.status(500).json({ msg: 'Erro no servidor LOGIN!' });
   }
 });
 
 
-// 🔹 Listar commits
+
+
 app.get('/commits', async (req, res) => {
   try {
     const db = await openDB();
@@ -115,24 +205,24 @@ app.get('/commits', async (req, res) => {
   }
 });
 
-// 🔹 Criar commit
+
 app.post('/commits', async (req, res) => {
   try {
     const db = await openDB();
     const { commit } = req.body;
 
-    // Verificação de campos obrigatórios
+    
     if (!commit) {
       return res.status(400).json({ error: 'Campos obrigatórios ausentes (commit).' });
     }
 
-    // Inserção no banco
+    // Insert to commits in sql
     const result = await db.run(
       'INSERT INTO commits (message) VALUES (?)',
       [commit]
     );
 
-    // Retornar o novo registro criado
+    // return values
     res.status(201).json({
       id: result.lastID,
       message: commit,
@@ -179,7 +269,7 @@ app.post('/visita', (req, res)=>{
 });
 
 // consultar visitar por dias, mes, e ano
-app.get('/visitas', (req, res)=>{
+app.get('/visitas', Autetication_Token, (req, res)=>{
   //const db = await openDB();
   
   dbJeito.all(`
@@ -200,6 +290,22 @@ app.get('/visitas', (req, res)=>{
 });
 
 
-app.listen(3000, () => {
-  console.log('Servidor rodando em http://localhost:3000');
+app.delete('/deleteUsers/:id', async (req, res)=>{
+  const {id} = req.params;
+  console.log('id localizado: ',id);
+
+  try{
+    const db = await openDB();
+    await db.run('DELETE FROM users WHERE id = ?', [id]);
+    res.status(200).json({msg: 'User Deleted!', id});
+
+  }catch(err){
+    res.status(500).json({msg: 'Try again', err});
+  }
+ 
+});
+
+
+app.listen(process.env.PORT, () => {
+  console.log('Servidor Online...');
 });

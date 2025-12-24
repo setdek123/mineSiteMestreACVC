@@ -4,6 +4,7 @@ import api from '@/backend/api/api';
 import { FormEvent, useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 
+
 import { useRouter } from 'next/navigation'
 
 
@@ -37,11 +38,27 @@ const Login = () => {
             const response = await api.post('/login',{
                 email: login,
                 passw: passw
-            });
+            },);
             
             if(response.status === 200){
+                const {token, user} = response.data;
+
+                // access localstorage
+                
+                //save token
+                localStorage.setItem('token', token);
+
+                // save user
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                console.log('Token', token);
+                console.log('Usuário logado', user);
+                
                 console.log('Usuário Logado com sucesso!');
-                router.push('/dashboard')
+                console.log('Usuário fez login as: ', new Date().toLocaleString());
+                
+                router.push('/dashboard');
+                
                 setLoading(true);
                 setPAdm('Bem viando mestre espiga!');
                 
