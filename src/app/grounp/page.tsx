@@ -18,7 +18,7 @@ const Grounp = () => {
                 <div className="flex flex-wrap gap-10 justify-center">
 
                     {/* Card 1 */}
-                    <div className="shadow-2xl rounded-3xl bg-[#242424] max-w-xs">
+                    <div className="shadow-2xl rounded-3xl bg-[#242424] max-w-xs" data-aos="fade-right" data-aos-delay="500">
                         <img 
                             src="/img/turma-mirim.jpg"
                             className="w-full rounded-t-3xl"
@@ -32,7 +32,7 @@ const Grounp = () => {
                     </div>
 
                     {/* Card 2 */}
-                    <div className="shadow-2xl rounded-3xl bg-[#242424] max-w-xs">
+                    <div className="shadow-2xl rounded-3xl bg-[#242424] max-w-xs" data-aos="fade-up" data-aos-delay="400">
                         <img 
                             src="/img/turma-infantil.jpg" 
                             className="w-full rounded-t-3xl"
@@ -46,7 +46,7 @@ const Grounp = () => {
                     </div>
 
                     {/* Card 3 */}
-                    <div className="shadow-2xl rounded-3xl bg-[#242424] max-w-xs">
+                    <div className="shadow-2xl rounded-3xl bg-[#242424] max-w-xs" data-aos="fade-right" data-aos-delay="500">
                         <img 
                             src="/img/img-5.jpg" 
                             className="w-full rounded-t-3xl h-80 object-cover"

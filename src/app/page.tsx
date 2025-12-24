@@ -7,6 +7,10 @@ import Context from "./context/page";
 import api from "@/backend/api/api";
 import { useEffect } from "react";
 
+// Aos Animation
+import 'aos/dist/aos.css';
+
+
 
 export default function Home() {
 
